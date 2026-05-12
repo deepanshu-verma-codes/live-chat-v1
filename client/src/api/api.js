@@ -20,11 +20,17 @@ api.interceptors.request.use((config) => {
 });
 
 // API Functions
-export const signup = (userData) =>
-  api.post("/signup", userData).then((response) => response.data);
+export const signup = (userData) => {
+  // If userData is FormData, let axios handle the Content-Type (multipart/form-data)
+  const config = userData instanceof FormData ? { headers: { "Content-Type": "multipart/form-data" } } : {};
+  return api.post("/signup", userData, config).then((response) => response.data);
+};
 
 export const login = (credentials) =>
   api.post("/login", credentials).then((response) => response.data);
 
 export const getUsers = () =>
   api.get("/users").then((response) => response.data);
+
+export const getChatList = () =>
+  api.get("/chat-list").then((response) => response.data);

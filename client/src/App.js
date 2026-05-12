@@ -4,6 +4,7 @@ import Login from './components/Login';
 import Chat from './components/Chat';
 import Home from './components/Home';
 import Layout from './components/Layout';
+import Profile from './components/Profile';
 
 // Protected Route: Only accessible if logged in
 function ProtectedRoute({ children }) {
@@ -44,6 +45,14 @@ function App() {
             element={
               <ProtectedRoute>
                 <Chat />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/profile/:id"
+            element={
+              <ProtectedRoute>
+                <Profile />
               </ProtectedRoute>
             }
           />

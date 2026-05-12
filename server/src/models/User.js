@@ -7,7 +7,7 @@ const userSchema = new mongoose.Schema({
   lastName: { type: String, required: true },
   gender: { type: String, enum: ['Male', 'Female', 'Other'], required: true },
   age: { type: Number, required: true, min: 13 },
-  avatar: { type: Number, required: true, min: 1, max: 6 }, // Avatar index (1-6)
+  avatar: { type: String, required: true }, // Can be a number index (1-6) or a file path
   createdAt: { type: Date, default: Date.now },
 });
 
