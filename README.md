@@ -31,7 +31,7 @@ The project is divided into two main parts:
 1. **Clone the repository**
    ```bash
    git clone <repository-url>
-   cd live-chat-v1
+   cd Nexus
    ```
 
 2. **Set up the Server**
