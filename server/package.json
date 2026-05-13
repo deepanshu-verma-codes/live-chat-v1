@@ -16,6 +16,7 @@
     "uuid": "^9.0.1"
   },
   "scripts": {
-    "start": "nodemon src/server.js"
+    "start": "node src/server.js",
+    "dev": "nodemon src/server.js"
   }
 }
