@@ -1,6 +1,6 @@
 ## 📸 Screenshots
 
-| Desktop View | Mobile/Side View | Feature Highlight |
+| Chat Room | Signup Form | Feature Highlight |
 | :---: | :---: | :---: |
 | <img src="https://res.cloudinary.com/damecjgp9/image/upload/v1778662392/Screenshot_2026-05-13_at_2.17.25_PM_vlah9m.png" width="300" /> | <img src="https://res.cloudinary.com/damecjgp9/image/upload/v1778662391/Screenshot_2026-05-13_at_2.22.32_PM_uol089.png" width="300" /> | <img src="https://res.cloudinary.com/damecjgp9/image/upload/v1778662390/Screenshot_2026-05-13_at_2.13.43_PM_fjk6ey.png" width="300" /> |
 
