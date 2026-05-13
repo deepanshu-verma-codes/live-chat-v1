@@ -3,26 +3,43 @@ const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const multer = require('multer');
 const path = require('path');
+const fs = require('fs-extra');
+const sharp = require('sharp');
 const User = require('../models/User');
 const Message = require('../models/Message');
 const router = express.Router();
 
 const JWT_SECRET = process.env.JWT_SECRET || 'your-secret-key';
 
-// Multer configuration for file uploads
-const storage = multer.diskStorage({
-  destination: (req, file, cb) => {
-    cb(null, path.join(__dirname, '../uploads'));
-  },
-  filename: (req, file, cb) => {
-    cb(null, Date.now() + path.extname(file.originalname));
-  },
-});
-
+// Multer configuration: Use memory storage for processing before saving
+const storage = multer.memoryStorage();
 const upload = multer({ 
   storage: storage,
-  limits: { fileSize: 5 * 1024 * 1024 }, // 5MB limit
+  limits: { fileSize: 10 * 1024 * 1024 }, // 10MB limit
 });
+
+const UPLOADS_DIR = path.join(__dirname, '../uploads');
+fs.ensureDirSync(UPLOADS_DIR);
+
+// Helper for file processing
+const processFile = async (file, isAvatar = false) => {
+    const isImage = file.mimetype.startsWith('image/');
+    const fileName = `${Date.now()}-${file.originalname.replace(/\s+/g, '_')}`;
+    const outputPath = path.join(UPLOADS_DIR, fileName);
+
+    if (isImage) {
+        // Compress image using sharp
+        await sharp(file.buffer)
+            .resize(isAvatar ? { width: 500, height: 500, fit: 'cover' } : { width: 1200, withoutEnlargement: true })
+            .jpeg({ quality: 80 })
+            .toFile(outputPath);
+    } else {
+        // Just save documents as is
+        await fs.writeFile(outputPath, file.buffer);
+    }
+    
+    return fileName;
+};
 
 // Username validation function
 const validateUsername = (username) => {
@@ -31,14 +48,23 @@ const validateUsername = (username) => {
   return username && username.length >= minLength && hasNumber;
 };
 
+router.get('/check-username', async (req, res) => {
+  const { username } = req.query;
+  if (!username) return res.status(400).json({ message: 'Username is required' });
+
+  try {
+    const user = await User.findOne({ username: username.toLowerCase() });
+    res.json({ available: !user });
+  } catch (error) {
+    res.status(500).json({ message: 'Server error' });
+  }
+});
+
+
 router.post('/signup', upload.single('image'), async (req, res) => {
   const { username, password, firstName, lastName, gender, age, avatar } = req.body;
   const image = req.file;
 
-  console.log('Signup data:', { username, password, firstName, lastName, gender, age, avatar });
-  if (image) console.log('Image uploaded:', image.filename);
-
-  // Validate username
   if (!validateUsername(username)) {
     return res.status(400).json({
       message: 'Username must be at least 4 characters long and contain at least one number',
@@ -48,16 +74,18 @@ router.post('/signup', upload.single('image'), async (req, res) => {
   try {
     const existingUser = await User.findOne({ username });
     if (existingUser) {
-      return res.status(400).json({ message: 'Username already in use, please choose another one' });
+      return res.status(400).json({ message: 'Username already in use' });
     }
 
     const hashedPassword = await bcrypt.hash(password, 10);
     
-    // Determine avatar value: uploaded image filename or predefined avatar index
-    const finalAvatar = image ? image.filename : avatar;
+    let finalAvatar = avatar;
+    if (image) {
+        finalAvatar = await processFile(image, true);
+    }
 
     if (!finalAvatar) {
-      return res.status(400).json({ message: 'Please select an avatar or upload an image' });
+      return res.status(400).json({ message: 'Please select an avatar' });
     }
 
     const user = new User({
@@ -77,6 +105,28 @@ router.post('/signup', upload.single('image'), async (req, res) => {
     console.error('Signup error:', error);
     res.status(500).json({ message: 'Server error' });
   }
+});
+
+router.post('/upload-chat-file', upload.single('file'), async (req, res) => {
+    const token = req.headers.authorization?.split(' ')[1];
+    if (!token) return res.status(401).json({ message: 'Unauthorized' });
+
+    try {
+        jwt.verify(token, JWT_SECRET);
+        if (!req.file) return res.status(400).json({ message: 'No file uploaded' });
+
+        const fileName = await processFile(req.file);
+        const fileType = req.file.mimetype.startsWith('image/') ? 'image' : 'document';
+
+        res.json({
+            fileUrl: fileName,
+            fileType,
+            fileName: req.file.originalname
+        });
+    } catch (error) {
+        console.error('File upload error:', error);
+        res.status(500).json({ message: 'Upload failed' });
+    }
 });
 
 

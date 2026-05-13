@@ -10,10 +10,9 @@ import {
   Alert,
   InputAdornment,
   IconButton,
+  Fade,
 } from "@mui/material";
 import {
-  AccountCircle,
-  Lock,
   Visibility,
   VisibilityOff,
   Login as LoginIcon,
@@ -48,6 +47,24 @@ function Login() {
 
   const handleClickShowPassword = () => setShowPassword(!showPassword);
 
+  const textFieldStyle = {
+    color: '#fff',
+    '& .MuiOutlinedInput-notchedOutline': { 
+      borderColor: 'rgba(255,255,255,0.1)',
+      borderRadius: '16px'
+    },
+    '&:hover .MuiOutlinedInput-notchedOutline': {
+      borderColor: 'rgba(0, 210, 255, 0.4)',
+    },
+    '&.Mui-focused .MuiOutlinedInput-notchedOutline': {
+      borderColor: '#00d2ff',
+      boxShadow: '0 0 15px rgba(0, 210, 255, 0.2)'
+    },
+    '& .MuiInputBase-input': {
+      padding: '16px 20px'
+    }
+  };
+
   return (
     <Box
       sx={{
@@ -66,41 +83,51 @@ function Login() {
           className="fade-in"
           sx={{
             p: { xs: 3, md: 5 },
-            borderRadius: 6,
-            background: "rgba(255, 255, 255, 0.05)",
-            backdropFilter: "blur(20px)",
-            boxShadow: "0 20px 50px rgba(0, 0, 0, 0.5)",
-            border: "1px solid rgba(255, 255, 255, 0.1)",
+            borderRadius: 8,
+            background: "rgba(255, 255, 255, 0.03)",
+            backdropFilter: "blur(30px)",
+            boxShadow: "0 25px 80px rgba(0, 0, 0, 0.6)",
+            border: "1px solid rgba(255, 255, 255, 0.08)",
             color: "#fff"
           }}
         >
-          <Box sx={{ mb: 4, textAlign: "center" }}>
+          <Box sx={{ mb: 5, textAlign: "center" }}>
             <Typography
               variant="h3"
-              component="h1"
-              gutterBottom
               sx={{
-                fontWeight: 800,
+                fontWeight: 900,
+                mb: 1,
+                letterSpacing: "-1.5px",
                 background: "linear-gradient(45deg, #00d2ff, #9d50bb)",
                 WebkitBackgroundClip: "text",
                 WebkitTextFillColor: "transparent",
-                mb: 1,
               }}
             >
-              Welcome Back
+              Nexus
             </Typography>
-            <Typography variant="body1" sx={{ fontWeight: 400, color: 'rgba(255,255,255,0.6)' }}>
-              Login to continue your conversations
+            <Typography variant="h6" sx={{ fontWeight: 400, color: 'rgba(255,255,255,0.5)', fontSize: '1rem' }}>
+              Welcome back to your network
             </Typography>
           </Box>
 
           {error && (
-            <Alert severity="error" sx={{ mb: 3, borderRadius: 2, bgcolor: 'rgba(211, 47, 47, 0.1)', color: '#ff8a80' }}>
-              {error}
-            </Alert>
+            <Fade in>
+              <Alert 
+                severity="error" 
+                sx={{ 
+                  mb: 3, 
+                  borderRadius: 3, 
+                  bgcolor: 'rgba(211, 47, 47, 0.05)', 
+                  color: '#ff8a80',
+                  border: '1px solid rgba(211, 47, 47, 0.2)'
+                }}
+              >
+                {error}
+              </Alert>
+            </Fade>
           )}
 
-          <Box component="form" noValidate sx={{ mt: 1 }}>
+          <Box component="form" noValidate>
             <TextField
               fullWidth
               label="Username"
@@ -110,14 +137,9 @@ function Login() {
               required
               margin="normal"
               InputProps={{
-                startAdornment: (
-                  <InputAdornment position="start">
-                    <AccountCircle sx={{ color: '#00d2ff' }} />
-                  </InputAdornment>
-                ),
-                sx: { color: '#fff', '& .MuiOutlinedInput-notchedOutline': { borderColor: 'rgba(255,255,255,0.1)' } }
+                sx: textFieldStyle
               }}
-              InputLabelProps={{ sx: { color: 'rgba(255,255,255,0.6)' } }}
+              InputLabelProps={{ sx: { color: 'rgba(255,255,255,0.4)', ml: 1 } }}
             />
             <TextField
               fullWidth
@@ -129,21 +151,16 @@ function Login() {
               required
               margin="normal"
               InputProps={{
-                startAdornment: (
-                  <InputAdornment position="start">
-                    <Lock sx={{ color: '#00d2ff' }} />
-                  </InputAdornment>
-                ),
                 endAdornment: (
                   <InputAdornment position="end">
-                    <IconButton onClick={handleClickShowPassword} edge="end" sx={{ color: 'rgba(255,255,255,0.4)' }}>
-                      {showPassword ? <VisibilityOff /> : <Visibility />}
+                    <IconButton onClick={handleClickShowPassword} edge="end" sx={{ color: 'rgba(255,255,255,0.2)' }}>
+                      {showPassword ? <VisibilityOff fontSize="small" /> : <Visibility fontSize="small" />}
                     </IconButton>
                   </InputAdornment>
                 ),
-                sx: { color: '#fff', '& .MuiOutlinedInput-notchedOutline': { borderColor: 'rgba(255,255,255,0.1)' } }
+                sx: textFieldStyle
               }}
-              InputLabelProps={{ sx: { color: 'rgba(255,255,255,0.6)' } }}
+              InputLabelProps={{ sx: { color: 'rgba(255,255,255,0.4)', ml: 1 } }}
             />
             <Button
               fullWidth
@@ -153,25 +170,26 @@ function Login() {
               sx={{
                 mt: 4,
                 mb: 3,
-                py: 1.5,
+                py: 2,
                 fontSize: "1.1rem",
-                fontWeight: 700,
-                borderRadius: 3,
+                fontWeight: 800,
+                borderRadius: 4,
                 textTransform: "none",
                 background: "linear-gradient(45deg, #00d2ff 30%, #9d50bb 90%)",
-                boxShadow: "0 4px 15px rgba(0, 210, 255, 0.3)",
+                boxShadow: "0 10px 30px rgba(0, 210, 255, 0.4)",
+                transition: "all 0.3s ease",
                 "&:hover": {
                   background: "linear-gradient(45deg, #9d50bb 30%, #00d2ff 90%)",
-                  transform: "translateY(-2px)",
-                  boxShadow: "0 6px 20px rgba(0, 210, 255, 0.4)",
+                  transform: "translateY(-3px)",
+                  boxShadow: "0 15px 40px rgba(0, 210, 255, 0.5)",
                 },
               }}
             >
-              Login
+              Access Account
             </Button>
             <Box textAlign="center">
-              <Typography variant="body2" sx={{ color: 'rgba(255,255,255,0.6)' }}>
-                Don't have an account?{" "}
+              <Typography variant="body2" sx={{ color: 'rgba(255,255,255,0.4)' }}>
+                New to Nexus?{" "}
                 <Link
                   to="/signup"
                   style={{
@@ -180,7 +198,7 @@ function Login() {
                     textDecoration: "none",
                   }}
                 >
-                  Sign Up
+                  Join the Network
                 </Link>
               </Typography>
             </Box>

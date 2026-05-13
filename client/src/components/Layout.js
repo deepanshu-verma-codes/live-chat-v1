@@ -21,12 +21,14 @@ import "./style.css";
 
 const getAvatarUrl = (avatar) => {
   if (!avatar) return "";
-  const isPredefined = /^[1-6]$/.test(avatar.toString());
+  const avatarStr = avatar.toString();
+  if (avatarStr.startsWith("http")) return avatarStr;
+  const isPredefined = /^[1-6]$/.test(avatarStr);
   if (isPredefined) {
-    return `https://mdbcdn.b-cdn.net/img/Photos/new-templates/bootstrap-chat/ava${avatar}-bg.webp`;
+    return `https://mdbcdn.b-cdn.net/img/Photos/new-templates/bootstrap-chat/ava${avatarStr}-bg.webp`;
   }
   const baseUrl = process.env.REACT_APP_CHAT_BASE_URL || "http://localhost:5001";
-  return `${baseUrl}/uploads/${avatar}`;
+  return `${baseUrl}/uploads/${avatarStr}`;
 };
 
 function Layout() {

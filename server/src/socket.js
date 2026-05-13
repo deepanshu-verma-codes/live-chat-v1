@@ -56,7 +56,7 @@ const initializeSocket = (io) => {
       }
     });
 
-    socket.on('chatMessage', async ({ recipientId, message }) => {
+    socket.on('chatMessage', async ({ recipientId, message, fileUrl, fileType, fileName }) => {
       if (!socket.userId || !recipientId) return;
 
       try {
@@ -64,6 +64,9 @@ const initializeSocket = (io) => {
           senderId: socket.userId,
           recipientId,
           message,
+          fileUrl,
+          fileType,
+          fileName,
           isRead: false
         });
         await msg.save();
@@ -73,6 +76,9 @@ const initializeSocket = (io) => {
           senderId: socket.userId,
           recipientId,
           message,
+          fileUrl,
+          fileType,
+          fileName,
           isRead: false,
           timestamp: msg.timestamp,
         };
@@ -110,6 +116,16 @@ const initializeSocket = (io) => {
         } catch (error) {
             console.error('Error marking messages as read:', error);
         }
+    });
+
+    socket.on('typing', ({ recipientId }) => {
+      if (!socket.userId) return;
+      io.to(recipientId).emit('userTyping', { senderId: socket.userId });
+    });
+
+    socket.on('stopTyping', ({ recipientId }) => {
+      if (!socket.userId) return;
+      io.to(recipientId).emit('userStoppedTyping', { senderId: socket.userId });
     });
 
     socket.on('disconnect', () => {

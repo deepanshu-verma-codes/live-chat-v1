@@ -26,6 +26,9 @@ export const signup = (userData) => {
   return api.post("/signup", userData, config).then((response) => response.data);
 };
 
+export const checkUsername = (username) =>
+  api.get(`/check-username?username=${username}`).then((response) => response.data);
+
 export const login = (credentials) =>
   api.post("/login", credentials).then((response) => response.data);
 
